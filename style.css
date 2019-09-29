@@ -1,0 +1,38 @@
+html, body{
+    margin:0px; padding:0;
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 950px;
+   /* background-color: blue; */
+} 
+#container {
+    display: flex;            /* flexibel layout och wrapping */
+    flex: wrap;
+   /* background-color: yellowgreen; */
+}
+ul {
+    list-style-type: none;   /* lista utan punkter  */
+}
+.rad {
+    width: 100px;
+    margin-right: 5px;
+    display: inline-block;
+}
+.hidden {
+    display: none;             /* ej synlig på skärmen  */
+}
+/*
+#stadrad {
+    background-color: red;
+}
+#land {
+    background-color: white;
+}
+#stad {
+    background-color: goldenrod;
+}
+*/
+#antal {
+    text-align: right;
+  /*  background-color: blueviolet; */
+}
