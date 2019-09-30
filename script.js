@@ -1,152 +1,353 @@
 // Javascript-dokument 
 
-fetch ("stad.json")
-// '.then' är ett promise som gör att JavaScript väntar tills 
-// förra anropet är klart
-.then (function(stadfil) { 
-    // return skickar resultatet vidare till nästa '.then' 
-    // 'stadfil.json()' är resultatet av fetch-läsningen
-    // (standardord för stadfil = response)           
-    return stadfil.json();                 
-})
-// 'dataStad' innehåller resultatet av föregående '.then'
-// function utan namn (triggas av en händelse, anropas aldrig utifrån)
-.then(function(stadfil) {  
-    // stadfilen skickas med för att vara tillgänglig i nästa steg
-    LaesInfilLand(stadfil);                         
-})
-// '.catch' hanterar fel
-.catch(function(data) {
-    console.log("fel vid inläsning av stad");
-});
+// börja med att läsa land-filen för att komma igång
+//SparaStadfil(1);
+LandfilIn();
 
-function LaesInfilLand(dataStad){
+// Tillbaka till land-sidan via onClick
+function InitLand(){
+    LandfilIn();
+}
+
+// kod för land skickas via onClick
+function InitStad(landid){
+    console.log("ska läsa in städer");
+    StadfilIn(landid, "Land");
+}
+
+// kod för stad skickas via onClick
+function InitDetaljSida(stadid){
+    console.log("ska läsa in städer");
+    StadfilIn(stadid, "Stad");
+}
+
+// stad markeras som besökt
+function MarkeraStad(stadid){
+    localStorage.setItem("visit", stadid);
+    console.log("sparas i localstogare: ");
+    localStorage.getItem("visit");
+    console.log(localStorage);
+}
+
+// visa besökta städer
+function InitVisit(){
+    localStorage.setItem("visit", stadid);
+    console.log("sparas i localstogare: ");
+    localStorage.getItem("visit");
+    console.log(localStorage);
+    StadfilIn(0,"visit");
+}
+
+// rensa historik och läs in landfil
+function RensaHist() {
+    localStorage.removeItem("visit");
+    LandfilIn();
+}
+// Inläsning från land-filen
+function LandfilIn() {
     fetch ("land.json")
     // '.then' är ett promise som gör att JavaScript väntar tills 
     // förra anropet är klart
-    .then (function(dataLand) {            
-        return dataLand.json();                 
+    .then (function(landfil) {     // landfil är respons från fetch    
+        return landfil.json();  // returnerar svaret (texten) som json-fil              
     })
-    // 'dataland' innehåller resultatet av föregående '.then'
+    // 'landfil' innehåller resultatet av föregående '.then'
     // function utan namn (triggas av en händelse, anropas aldrig utifrån)
-    .then(function(dataLand) { 
-        BehandlaData(dataLand, dataStad);                       
+    .then(function(landfil) {   // här kommer inläst data in som json-fil
+        ByggLandSida(landfil);
+        //ByggVisitSida(landfil);                    
     })
     // '.catch' hanterar fel
-    .catch(function(infilLand) {
+    .catch(function(landdata) {
         console.log("fel vid inläsning av land");
     });
-}
-function BehandlaData(landFil, stadFil) {
-    // första gången = landbilden
-    ByggLandSida(landFil);
+}   
 
-    // document.getElementById("rubrik").innerHTML = "Länder";
-
-    // var kodrad = "";
-    // document.getElementById("radinfo").innerText = "Sverige";
-    // document.getElementById("buttonid").innerText = "Visa städer";
-    
-    // kodrad += document.getElementById("listrad").innerHTML;
-
-    // console.log("efter första läsningen ");
-    // console.log(kodrad);
-
-    // document.getElementById("radinfo").innerText = "Norge";
-    // document.getElementById("buttonid").innerText = "Visa städer";
-    // kodrad += document.getElementById("listrad").innerHTML;
-
-    // console.log("efter andra läsningen ");
-    // console.log(kodrad);
-
-    // document.getElementById("lista").innerHTML = kodrad;
-
-    // document.getElementById("vidareval").innerHTML = "Visa besökta städer";
+// inläsning av stad-filen
+function StadfilIn(id, val){
+    fetch ("stad.json")
+    // '.then' är ett promise som gör att JavaScript väntar tills 
+    // förra anropet är klart
+    .then (function(stadfil) { 
+        // return skickar resultatet vidare till nästa '.then' 
+        // 'stadfil.json()' är resultatet av fetch-läsningen
+        // (standardord för stadfil = response)           
+        return stadfil.json();                 
+    })
+    // 'stadfil' innehåller resultatet av föregående '.then'
+    // function utan namn (triggas av en händelse, anropas aldrig utifrån)
+    .then (function(stadfil) {  
+        BearbetaStadfil(stadfil, id, val);                       
+    })
+    // '.catch' hanterar fel
+    .catch(function(staderror) {
+        console.log("fel vid inläsning av stad");
+    });
 }
 
-function SorteraStad(data) {
-    // sort-version med return behövs för att sortera sträng
-    // Sortera efter landskod
-    data.sort(function (x, y) {
-       //return x.population - y.population;  // stigande sortering
-       return y.population - x.population;   // fallande sortering  
-    });   
-}
-function ByggLandSida(landFil) {
+function ByggLandSida(landfil) {
+    // rensa skärmen
+    document.getElementById("listrad").innerHTML = "";
+    document.getElementById("valrad").innerHTML = "";
+    SparaStadfil(landfil);
+    // console.log("landfilen = ");
+    // console.log(landfil);
+    // var texta = JSON.stringify(landfil);
+    // console.log("efter stringify = ");
+    // console.log(texta);
+    // console.log(landfil[0]);
+    // rubrik
+    document.getElementById("rubrik").innerText = "Länder";
 
     // en rad per land skapas
-    for (landInd = 0 ; landInd < landFil.length ; landInd++) {
+    for (landInd = 0 ; landInd < landfil.length ; landInd++) {
         var kodtext = "";
 
         // land till detaljraden
-        var land = landFil[landInd].countryname;
+        var land = landfil[landInd].countryname;
         kodtext += "<div id='radinfo'>" + land + "</div>";
-        console.log("kodtext med landrad = ");
-        console.log(kodtext);
 
-        // button med land-id lagrat i 'OnClick'
-        var landid = landFil[landInd].id;
-        var onClickText = 'OnClick="ByggStadSida('+ landid + ')"' ;
-        console.log("onClickText = ");
-        console.log(onClickText);
-        kodtext += "<button id='radbutton' " + onClickText + ">Visa städer";
+        // button med land-id och infoval lagrat i 'OnClick'
+        var param = landfil[landInd].id + ", true";
+        var onClickText = 'OnClick="InitStad('+ param + ')"' ;
+        kodtext += "<button id='radbutton' "+onClickText + ">Visa städer";
 
         // slut på button-deklaration + radbryt
         kodtext += "</button><br>";
-        console.log("kodtext med button = ");
-        console.log(kodtext);
 
         // lägg till den skapade listraden 
         var listradtext = document.getElementById("listrad");
-        console.log("listrad före insättning");
+        listradtext.insertAdjacentHTML("beforeend", kodtext)
+    }
+        // button för vidare val
+        var kodtext = "";
+        kodtext += '<button id="val" onClick="InitVisit()">Se historik</button>';
+    
+        // lägg till den skapade valraden 
+        var listradtext = document.getElementById("valrad");
+        console.log("kodtext = ");
+        console.log(kodtext);
         console.log(listradtext);
-        listrad.insertAdjacentHTML("beforeend", kodtext)
+        listradtext.insertAdjacentHTML("beforeend", kodtext) 
+}
+
+function BearbetaStadfil(stadfil, id, val) {
+    // val 'lista' = visa städer för inkommande landid
+    // val 'detalj' = visa detaljinfo för inkommande stadid
+    // val 'visit' = visa lista på stadid lagrade i localStorage
+    if (val = "lista") {
+        ByggStadSida(stadfil, id);
+    } 
+    if (val = "detalj") {
+        ByggDetaljSida(stadfil, id);
+    }
+    if (val = "visit") {
+        ByggVisitSida(stadfil);
+    } else {
+        console.log("fel vid bearbetning av stadfilen");
     }
 }
-function ByggStadSida(radid) {
-    console.log("dags att bygga stadsida");
-    console.log("radid = " + radid); 
-    // console.log(document.getElementById("lista").innerHTML);
-    // console.log(document.getElement("radid").innerHTML);
-    //ByggStadSida(stadFil, "1");
-}
-function ByggStadSida2(stadFil, landid) {
-    document.getElementById("rubrik").innerHTML = "Städer";
 
-    // samma text på button för samtliga detaljrader
-    document.getElementById("radbutton").innerText = "Mer info";
+function ByggStadSida(stadfil, landid) {
+    // rensa skärmen
+    document.getElementById("listrad").innerHTML = "";
+    document.getElementById("valrad").innerHTML = "";
+
+    // rubrik
+    document.getElementById("rubrik").innerText = "Städer";
 
     // en rad per stad skapas
-    var kodrad = "";
-    for (stadInd = 0 ; stadInd < stadFil.length ; stadInd++) {
-        var stad = stadFil[stadInd].stadname;
-        document.getElementById("radinfo").innerText = stad; 
+    for (stadInd = 0 ; stadInd < stadfil.length ; stadInd++) {
+        var kodtext = "";
 
-        // raden behöver ha ett id som kan fångas upp
-        var id = stadFil[stadInd].id;
-        document.getElementById("radid").innerText = id; 
-        
-        // lägg ihop den skapade listraden med tidigare rader
-        kodrad += document.getElementById("listrad").innerHTML;
-        console.log("kodrad = " + kodrad);
+        // ta enbart med de städer som hör till aktuellt land
+        if (stadfil[stadInd].countryid === landid) {
+            // stad till detaljraden
+            var stad = stadfil[stadInd].stadname;
+            kodtext += "<div id='radinfo'>" + stad + "</div>";
+    
+            // button med stad-id och infoval lagrat i 'OnClick'
+            var param = stadfil[stadInd].id + ", false";
+            var onClickText = 'OnClick="InitDetaljSida('+ param + ')"' ;
+            kodtext += "<button id='radbutton' "+onClickText + ">Mer info";
+    
+            // slut på button-deklaration + radbryt
+            kodtext += "</button><br>";
+
+            // lägg till den skapade listraden 
+            var listradtext = document.getElementById("listrad");
+            console.log("kodtext för stad = ");
+            console.log(kodtext);
+            console.log(listradtext);
+            listradtext.insertAdjacentHTML("beforeend", kodtext)     
+        }
     }
-    // info om länder läggs ut på skärmen
-    document.getElementById("lista").innerHTML = kodrad;
-    console.log("listdetaljer = " + kodrad);
+    // button för vidare val
+    var kodtext = "";
+    kodtext += '<button id="val" onClick="InitLand()">Tillbaka</button>';
 
-    // val för sidan Besökta städer
-    document.getElementById("vidareval").innerHTML = "Tillbaka";
+    // lägg till den skapade valraden 
+    var listradtext = document.getElementById("valrad");
+    console.log("kodtext = ");
+    console.log(kodtext);
+    console.log(listradtext);
+    listradtext.insertAdjacentHTML("beforeend", kodtext) 
 }
 
-function SkrivUt(land, stad, antal, listrad) {
-    // document.getElementById("land").innerHTML = land;
-    // document.getElementById("stad").innerHTML = stad;
-    // document.getElementById("antal").innerHTML = antal;
-    var nyListrad = document.getElementById("listrad").innerHTML;
-    listrad += nyListrad;
-    return listrad;
+function ByggDetaljSida(stadfil, stadid) {
+    // rensa skärmen
+    document.getElementById("listrad").innerHTML = "";
+    document.getElementById("valrad").innerHTML = "";
+
+    // rubrik
+    document.getElementById("rubrik").innerText = "Detaljinfo";
+
+    // rätt stad ska hittas
+    stadInd = 0;
+    while ((stadfil[stadInd].id != stadid) && (stadInd < stadfil.length)) {
+        stadInd++;
+    }
+    if (stadfil[stadInd].id === stadid) {
+        var kodtext = "";
+
+        // namn 
+        var stad = stadfil[stadInd].stadname;
+        kodtext += "<p id='namn'>Lokala fakta: " + stad + "</p>";
+
+        // antal innevånare
+        var antal = stadfil[stadInd].population;
+        kodtext += "<p id='antal'>Antal invånare: " + antal + "</p>";
+        
+        // uppgift om tidigare besök-markering
+           
+        // button för besök-markering (stad-id lagrat i 'OnClick')
+        var stadid = stadfil[stadInd].id;
+        var onClickText = 'OnClick="MarkeraStad('+ stadid + ')"';
+        kodtext += "<button id='radbutton' "+ onClickText + ">";
+
+        // slut på button-deklaration (inkl ledtext) + radbryt
+        kodtext += "Markera staden som besökt</button><br>";
+
+        // lägg till den skapade listraden 
+        var listradtext = document.getElementById("listrad");
+        console.log("kodtext för stad = ");
+        console.log(kodtext);
+        console.log(listradtext);
+        listradtext.insertAdjacentHTML("beforeend", kodtext)  
+        // valknappar
+        var kodtext = "";  
+    
+        // tillbaka till stad-sidan (land-id och infoval lagrat i 'OnClick')
+        var param = stadfil[stadInd].countryid + ", true";
+        var onClickText = 'OnClick="InitStad('+ param + ')"' ;
+        kodtext += "<button id='valbtnStad' "+onClickText + ">Tillbaka till stad-lista";
+        kodtext += "</button>";   // slut på button-deklaration 
+    
+        // tillbaka till land-listan    
+        kodtext += '<button id="valbtnLand" onClick="InitLand()">Tillbaka till land-lista';
+        kodtext += "</button>";   // slut på button-deklaration 
+    
+        // lägg till den skapade listraden 
+        var listradtext = document.getElementById("valrad");
+        console.log("kodtext = ");
+        console.log(kodtext);
+        console.log(listradtext);
+        listradtext.insertAdjacentHTML("beforeend", kodtext);  
+    } else {
+        console.log("stad med id " + stadid) + " hittades inte";
+    }
 }
 
-function vidareval(){
-    console.log("dags att gå vidare");
+function ByggVisitSida(stadfil, stadid) {
+    // rensa skärmen
+    document.getElementById("listrad").innerHTML = "";
+    document.getElementById("valrad").innerHTML = "";
+
+    // rubrik
+    var text = "Följande städer har du tidigare besökt";
+    document.getElementById("rubrik").innerText = text;
+
+    // hämta sparade städer från localstogare
+    var visit = [3,6,7];
+
+    // hämta data för aktuella städer
+    visit.forEach(skrivut);
+    function skrivut(stadid){
+        console.log ("dags att skriva ut nr " + stadid);
+    }
+    // for (visitInd = 0 ; visitInd < visit.length ; visitInd++) {
+
+        // namn 
+        var stad = stadfil[stadid].stadname;
+        kodtext += "<p id='namn'>Lokala fakta: " + stad + "</p>";
+
+        // antal innevånare
+        var antal = stadfil[stadid].population;
+        kodtext += "<p id='antal'>Antal invånare: " + antal + "</p>";
+
+        // button för besök-markering (stad-id lagrat i 'OnClick')
+        var stadid = visit[visitInd].id;
+        var onClickText = 'OnClick="MarkeraStad('+ stadid + ')"';
+        kodtext += "<button id='radbutton' "+ onClickText + ">";
+
+        // slut på button-deklaration (inkl ledtext) + radbryt
+        kodtext += "Markera staden som besökt</button><br>";
+
+        // lägg till den skapade listraden 
+        var listradtext = document.getElementById("listrad");
+        console.log("kodtext för stad = ");
+        console.log(kodtext);
+        console.log(listradtext);
+        listradtext.insertAdjacentHTML("beforeend", kodtext)  
+        // valknappar
+        var kodtext = "";  
+    
+        // rensa historik
+        var param = visit[visitInd].countryid + ", true";
+        var onClickText = 'OnClick="RensaHist()"';
+        kodtext += "<button id='valbtnrensa' "+onClickText + ">Rensa";
+        kodtext += "</button>";   // slut på button-deklaration 
+    
+        // tillbaka till land-listan    
+        kodtext += '<button id="valbtnLand" onClick="InitLand()">Tillbaka till land-lista';
+        kodtext += "</button>";   // slut på button-deklaration 
+    
+        // lägg till den skapade listraden 
+        var listradtext = document.getElementById("valrad");
+        console.log("kodtext = ");
+        console.log(kodtext);
+        console.log(listradtext);
+        listradtext.insertAdjacentHTML("beforeend", kodtext);  
+
+}
+
+function SparaStadfil(stadfil) {
+    console.log("dags att skriva ut landsfil");
+    console.log(stadfil);
+    console.log(stadfil[0]);
+    console.log(stadfil[0].countryname);
+    //document.getElementById("rubrik").innerHTML = "Städer";
+    // console.log("städer = ");
+    // console.log(stadfil);
+    // en rad per stad skapas
+    // var kodrad = "";
+    // for (stadInd = 0 ; stadInd < stadFil.length ; stadInd++) {
+    //     // spar i localStorage
+    // localStorage.removeItem("TownArray");
+    // tryArray = [1,2,3,4,5];
+    // stadfil.forEach(skrivut);
+    // function skrivut(nr){
+    //     console.log ("dags att skriva ut nr " + nr);
+    //}
+    // for (ind = 0 ; ind < 5 ; ind++){
+    //     var nyckel=
+    //     //localStorage[TownArray[ind]] = tryArray[ind];
+    //     //localStorage.TownArray = tryArray;
+    //     localStorage.TownArray[ind] = tryArray[ind];
+    // }
+    //localStorage.setItem("TownArray",tryArray);  // key, value
+    // console.log("localstorage = ");
+    // console.log(localStorage);
+    // console.log("tryArray = ");
+    // console.log(tryArray);
 }
