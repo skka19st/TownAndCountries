@@ -10,6 +10,18 @@ html, body{
     flex: wrap;
    /* background-color: yellowgreen; */
 }
+#landcontainer {
+    background-color:lightgreen;
+}
+#stadcontainer {
+    background-color: pink;
+}
+#detaljcontainer {
+    background-color: gold;
+}
+#historikcontainer {
+    background-color: gray;
+}
 ul {
     list-style-type: none;   /* lista utan punkter  */
 }
@@ -19,7 +31,7 @@ ul {
     display: inline-block;
 }
 .hidden {
-    display: none;             /* ej synlig på skärmen  */
+    display: none;             /* ej synlig på skärmen, tar ej plats  */
 }
 /*
 #stadrad {
