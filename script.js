@@ -1,8 +1,7 @@
 // Javascript-dokument 
 
-// läs in landfil och stadfil
+// läs in landfil 
 LandfilIn();
-//StadfilIn();
 
 // ny inläsning av landfilen
 function InitLand(){
@@ -16,33 +15,65 @@ function InitStad(landid, landnamn){
 function InitDetalj(stadid, stadnamn, antal, landnamn){
     ByggDetaljSida(stadid, stadnamn, antal, landnamn);
 }
-// detaljraden släcks ned så den inte syns (eller tas plats)
-function DetaljBort(){
-    document.getElementById("detaljcontainer").style.display = "none";
+
+// staden markeras som besökt
+function InitMarkera(stadid){
+    // läs in de ev stadid som redan är lagrade
+    var stadlista = LasLocalStorage();
+
+    // kontrollera om staden redan är markerad som besökt
+    var stadSaknas = KontrolleraStad(stadlista, stadid);
+   
+    //stadens idnr sparas i local Storage
+    if (stadSaknas) {
+        stadlista.push(stadid);            // stadid läggs sist i listan
+        stadlista.sort(function (x, y) {   // array sorteras
+            return x - y;                  // stigande sortering
+            //return y - x;                // fallande sortering  
+        }); 
+        stadstring = stadlista.toString(); // omvandla array till string
+        localStorage.setItem("stad", stadstring);
+        console.log("stadstring= " + stadstring);      
+    }
+    console.log(localStorage);
 }
-// tidigare historik
-function InitHist(){
-    ByggHistorikSida();
+
+function KontrolleraStad(stadlista, stadid) {    
+    for (stadInd = 0 ; stadInd < stadlista.length ; stadInd++) {
+        var num1 = Number(stadlista[stadInd]);
+        var num2 = Number(stadid);
+        if (num1 === num2) {
+        //if (stadlista[stadInd] === stadid) {
+            console.log("Bingo!");
+            return false;
+        }
+    } 
+    // angiven stad fanns inte tidigare i localStorage
+    return true;  
 }
-// rensa tidigare historik, läs in landfilen igen
-function RensaHistorik(){
-    console.log (" här ska vi rensa");
-    LandfilIn();
+
+function LasLocalStorage(){
+    stadlista = new Array;
+    console.log("oinitierad stadlista = " + stadlista);
+    var stadstring = localStorage.getItem("stad"); 
+    if (stadstring === null) {
+        return stadlista;          // längd=0 ???
+    }
+
+    // omvandla string från localeStorage till array
+    stadlista = stadstring.split(",");  
+    return stadlista;   
 }
 function ByggLandSida(landfil) {
     console.log("funktionen ByggLandSida:");
     console.log(landfil);
     // rensa skärmen från ev gammalt data
-    //document.getElementById("landcontainer").innerText = "";
     document.getElementById("landrad").innerHTML = "";
-    document.getElementById("valLand").innerHTML = "";
-    document.getElementById("valHist").innerHTML = "";
 
     // endast land-delen ska synas
     // 'none' = även containerns plats försvinner
     document.getElementById("stadcontainer").style.display = "none";  
     document.getElementById("detaljcontainer").style.display = "none";
-    document.getElementById("historikcontainer").style.display = "none";
 
     // en rad per land skapas
     for (landInd = 0 ; landInd < landfil.length ; landInd++) {
@@ -63,14 +94,7 @@ function ByggLandSida(landfil) {
         // lägg till den skapade listraden 
         var listradtext = document.getElementById("landrad");
         listradtext.insertAdjacentHTML("beforeend", kodtext);
-    }
-    // till historik (button)
-    var kodtext = "";
-    kodtext += '<button id="btnvalHist" onClick="InitHist()">Se historik</button>';
- 
-    // lägg till den skapade valraden 
-    var listradtext = document.getElementById("valLand");
-    listradtext.insertAdjacentHTML("beforeend", kodtext)        
+    }     
 }
 
 function ByggStadSida(stadfil, landid, landnamn) {
@@ -159,43 +183,6 @@ function ByggDetaljSida(id, namn, antal, landnamn) {
     listradtext.insertAdjacentHTML("beforeend", kodtext) 
 }
 
-function ByggHistorikSida(id, namn, antal, landnamn) {
-    console.log("funktionen ByggHistorikSida:");
-    // rensa skärmen från ev gammalt data
-    //document.getElementById("historikrad").innerHTML = "";
-    // document.getElementById("valDetalj").innerHTML = "";
-
-    // visa historik om tidigare besökta städer
-    // 'initial' = standardvärde (synlig)
-    document.getElementById("historikcontainer").style.display = "initial";
-
-    // stadens info till skärmen
-    var kodtext = "";
-    kodtext += '<div id="stadnamn">' + "historikrad" + '</div>';
-    var detaljtext = "";
-    detaljtext += " ligger i " + "hårdkodat" + " och beräknas ha ";
-    detaljtext +=  " innevånare"; 
-    kodtext += '<div id="historiktext">' + detaljtext + '</div>';
-
-    // lägg till den skapade listraden 
-    var listradtext = document.getElementById("historikrad");
-    listradtext.insertAdjacentHTML("beforeend", kodtext); 
-
-    // tillbaka eller rensa historik (bottons) 
-    var kodtext = "";
-    var ledtext = "Tillbaka till förstasidan";
-    kodtext += '<button onClick="InitLand()">';
-    kodtext += ledtext + '</button>';
-
-    var ledtext = "Rensa historik";
-    kodtext += '<button onClick="RensaHistorik()">';
-    kodtext += ledtext + '</button>';
-
-    // lägg till den skapade valraden 
-    var listradtext = document.getElementById("valHist");
-    listradtext.insertAdjacentHTML("beforeend", kodtext) 
-}
-
 // inläsning av landfilen
 function LandfilIn() {
     fetch ("land.json")
@@ -236,4 +223,3 @@ function StadfilIn(landid, landnamn){
         console.log("fel vid inläsning av stad");
     });
 }
-
