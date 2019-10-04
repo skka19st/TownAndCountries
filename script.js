@@ -32,19 +32,16 @@ function InitMarkera(stadid){
             //return y - x;                // fallande sortering  
         }); 
         stadstring = stadlista.toString(); // omvandla array till string
-        localStorage.setItem("stad", stadstring);
-        console.log("stadstring= " + stadstring);      
+        localStorage.setItem("stad", stadstring);   
     }
-    console.log(localStorage);
 }
 
 function KontrolleraStad(stadlista, stadid) {    
     for (stadInd = 0 ; stadInd < stadlista.length ; stadInd++) {
         var num1 = Number(stadlista[stadInd]);
         var num2 = Number(stadid);
-        if (num1 === num2) {
         //if (stadlista[stadInd] === stadid) {
-            console.log("Bingo!");
+        if (num1 === num2) {        
             return false;
         }
     } 
@@ -54,19 +51,17 @@ function KontrolleraStad(stadlista, stadid) {
 
 function LasLocalStorage(){
     stadlista = new Array;
-    console.log("oinitierad stadlista = " + stadlista);
     var stadstring = localStorage.getItem("stad"); 
     if (stadstring === null) {
-        return stadlista;          // längd=0 ???
+        return stadlista;          
     }
 
     // omvandla string från localeStorage till array
     stadlista = stadstring.split(",");  
     return stadlista;   
 }
+
 function ByggLandSida(landfil) {
-    console.log("funktionen ByggLandSida:");
-    console.log(landfil);
     // rensa skärmen från ev gammalt data
     document.getElementById("landrad").innerHTML = "";
 
@@ -98,8 +93,6 @@ function ByggLandSida(landfil) {
 }
 
 function ByggStadSida(stadfil, landid, landnamn) {
-    console.log("funktionen ByggStadSida:");
-    console.log(stadfil);
     // rensa skärmen från ev gammalt data
     document.getElementById("stadrad").innerHTML = "";
     document.getElementById("valStad").innerHTML = "";
@@ -146,7 +139,6 @@ function ByggStadSida(stadfil, landid, landnamn) {
 }
 
 function ByggDetaljSida(id, namn, antal, landnamn) {
-    console.log("funktionen ByggDetaljSida:");
     // rensa skärmen från ev gammalt data
     document.getElementById("detaljrad").innerHTML = "";
     document.getElementById("valDetalj").innerHTML = "";
@@ -186,17 +178,20 @@ function ByggDetaljSida(id, namn, antal, landnamn) {
 // inläsning av landfilen
 function LandfilIn() {
     fetch ("land.json")
+
     // '.then' är ett promise som gör att JavaScript väntar tills 
     // förra anropet är klart
     // return skickar resultatet vidare till nästa '.then' 
     .then (function(landfil) {     // 'landfil' är respons från fetch    
      return landfil.json();        // returnerar svaret (texten) som json-fil              
     })
+
     // 'landfil' innehåller resultatet av föregående '.then'
     // function utan namn (triggas av en händelse, anropas aldrig utifrån)
     .then(function(landfil) {   // här kommer inläst data in som json-fil
         ByggLandSida(landfil);  
     })
+
     // '.catch' hanterar fel
     .catch(function(landdata) {
     console.log("fel vid inläsning av land");
@@ -206,18 +201,20 @@ function LandfilIn() {
 // inläsning av stad-filen
 function StadfilIn(landid, landnamn){
     fetch ("stad.json")
+
     // '.then' är ett promise som gör att JavaScript väntar tills 
     // förra anropet är klart
     .then (function(stadfil) { 
-        // return skickar resultatet vidare till nästa '.then' 
-        // 'stadfil.json()' är resultatet av fetch-läsningen          
+        // return skickar resultatet vidare till nästa '.then'         
         return stadfil.json();                 
     })
+
     // 'stadfil' innehåller resultatet av föregående '.then'
     // function utan namn (triggas av en händelse, anropas aldrig utifrån)
     .then (function(stadfil) {  
         ByggStadSida(stadfil, landid, landnamn);                       
     })
+    
     // '.catch' hanterar fel
     .catch(function(staderror) {
         console.log("fel vid inläsning av stad");
