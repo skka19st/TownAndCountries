@@ -2,49 +2,61 @@ html, body{
     margin:0px; padding:0;
     padding-left: 15px;
     padding-right: 15px;
-    max-width: 950px;
-   /* background-color: blue; */
 } 
-#container {
-    display: flex;            /* flexibel layout och wrapping */
-    flex: wrap;
-   /* background-color: yellowgreen; */
+a {
+    text-decoration: none;      /* länk utan understreck  */
 }
-#landcontainer {
-    background-color:lightgreen;
+.rubrik {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
 }
-#stadcontainer {
-    background-color: pink;
-}
-#detaljcontainer {
-    background-color: gold;
-}
-#historikcontainer {
-    background-color: gray;
-}
-ul {
-    list-style-type: none;   /* lista utan punkter  */
-}
-.rad {
-    width: 100px;
-    margin-right: 5px;
-    display: inline-block;
-}
-.hidden {
+.dolda {
     display: none;             /* ej synlig på skärmen, tar ej plats  */
 }
-/*
+ul {
+    list-style-type: none;   /* ingen punktlista */
+}
+#landrad {
+    display: flex;            /* flexibel layout och wrapping */
+    flex-wrap: wrap;
+    flex-direction: row;
+    width:100%;
+}
+#landnamn {
+    margin-left: 10px;
+    padding-left: 10px;
+}
+#btnland {
+    margin-right: 5px;
+}
+#valLand {
+    display: flex;            /* flexibel layout och wrapping */
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-left: 40px;
+}
 #stadrad {
-    background-color: red;
+    display: flex;            /* flexibel layout och wrapping */
+    flex-wrap: wrap;
+    flex-direction: column;
 }
-#land {
-    background-color: white;
+#stadrad div {
+    width: 90px;
 }
-#stad {
-    background-color: goldenrod;
+#namn {
+    margin-left: 10px;
+    padding-left: 10px;
 }
-*/
-#antal {
-    text-align: right;
-  /*  background-color: blueviolet; */
+#btnstad {
+    width: 80px;
+    margin-right: 5px;
+}
+#stadcontainer {
+display: flex;            /* flexibel layout och wrapping */
+flex-wrap: wrap;
+flex-direction: row;
+}
+#detaljcontainer {  
+    margin-top: 30px;  
 }
